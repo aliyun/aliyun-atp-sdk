@@ -1,0 +1,8 @@
+*.class
+.idea
+build/**
+*.bin
+artifact.jar
+atptool.jar
+*.iml
+target/**
