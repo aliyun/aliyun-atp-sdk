@@ -25,6 +25,7 @@ package com.aliyun.atp.client;
 import sun.tools.attach.HotSpotVM;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -45,37 +46,41 @@ public class ATPClient {
             "List class and number of instance in Java heap"));
     }
 
-    private static void registerJcmdCommands(HotSpotVM vm) throws Exception {
+    private static void registerJcmdCommands(HotSpotVM vm){
         PrintStream oldOut = System.out;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(bos);
         System.setOut(newOut);
-        new JcmdCommand("", "help", "").executeCommand(vm, null);
-        System.setOut(oldOut);
-        String availableJcmd = bos.toString();
-        bos.close();
-        newOut.close();
-        String[] lines = availableJcmd.split("\n");
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i].matches("[a-zA-Z_]+?\\.[a-zA-Z_]+")) {
-                // Read help document of jcmd subcommands
-                bos = new ByteArrayOutputStream();
-                newOut = new PrintStream(bos);
-                System.setOut(newOut);
-                new JcmdCommand("", "help " + lines[i], "").executeCommand(vm, null);
-                System.setOut(oldOut);
-                String jcmdHelp = bos.toString();
-                String[] jcmdHelpLines = jcmdHelp.split("\n");
-                String description = "";
-                if (jcmdHelpLines.length > 2) {
-                    description = jcmdHelpLines[1];
+        try {
+            new JcmdCommand("", "help", "").executeCommand(vm, null);
+            String availableJcmd = bos.toString();
+            String[] lines = availableJcmd.split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i].matches("[a-zA-Z_]+?\\.[a-zA-Z_]+")) {
+                    // Read help document of jcmd subcommands
+                    bos = new ByteArrayOutputStream();
+                    newOut = new PrintStream(bos);
+                    System.setOut(newOut);
+                    new JcmdCommand("", "help " + lines[i], "").executeCommand(vm, null);
+                    System.setOut(oldOut);
+                    String jcmdHelp = bos.toString();
+                    String[] jcmdHelpLines = jcmdHelp.split("\n");
+                    String description = "";
+                    if (jcmdHelpLines.length > 2) {
+                        description = jcmdHelpLines[1];
+                    }
+                    // Register jcmd command accordingly
+                    String cmdName = lines[i];
+                    cmdName = cmdName.replace(".", "_");
+                    cmdName = cmdName.toLowerCase();
+                    commands.add(new JcmdCommand(cmdName, lines[i], description));
                 }
-                // Register jcmd command accordingly
-                String cmdName = lines[i];
-                cmdName = cmdName.replace(".", "_");
-                cmdName = cmdName.toLowerCase();
-                commands.add(new JcmdCommand(cmdName, lines[i], description));
             }
+        } catch (Exception e) {
+            // Failed to execute Jcmd operations
+            // Skip...
+        } finally {
+            System.setOut(oldOut);
         }
     }
 

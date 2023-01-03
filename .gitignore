@@ -6,3 +6,4 @@ artifact.jar
 atptool.jar
 *.iml
 target/**
+run.sh
