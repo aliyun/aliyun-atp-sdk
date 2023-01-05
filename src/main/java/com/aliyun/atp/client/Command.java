@@ -22,16 +22,26 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
 import java.util.Arrays;
 
-abstract class Command {
+public abstract class Command {
     private final String name;
     private final String description;
     private final CommandOption[] options;
 
-    Command(String name, String description, CommandOption[] options) {
+    public Command() {
+        this.name = "";
+        this.description = "";
+        this.options = null;
+    }
+
+    public Command(String name) {
+        this.name = name;
+        this.description = "";
+        this.options = null;
+    }
+
+    public Command(String name, String description, CommandOption[] options) {
         this.name = name;
         this.description = description;
         this.options = options;

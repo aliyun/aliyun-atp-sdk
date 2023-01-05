@@ -22,15 +22,11 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
-import java.util.Arrays;
-
-class JcmdCommand extends Command {
+public class JcmdCommand extends Command {
     private static final String VM_OPERATION_JCMD = "jcmd";
     private final String jcmdCommand;
 
-    JcmdCommand(String commandName, String jcmdCommand, String description) {
+    public JcmdCommand(String commandName, String jcmdCommand, String description) {
         super(commandName, description, new CommandOption[]{});
         this.jcmdCommand = jcmdCommand;
     }

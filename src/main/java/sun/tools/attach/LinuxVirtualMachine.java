@@ -28,17 +28,17 @@ import java.io.IOException;
 
 // JNI methods reflection
 public class LinuxVirtualMachine {
-    static native void sendQuitTo(int pid) throws IOException;
+    public static native void sendQuitTo(int pid) throws IOException;
 
-    static native void checkPermissions(String path) throws IOException;
+    public static native void checkPermissions(String path) throws IOException;
 
-    static native int socket() throws IOException;
+    public static native int socket() throws IOException;
 
-    static native void connect(int fd, String path) throws IOException;
+    public static native void connect(int fd, String path) throws IOException;
 
-    static native void close(int fd) throws IOException;
+    public static native void close(int fd) throws IOException;
 
-    static native int read(int fd, byte[] buf, int off, int bufLen) throws IOException;
+    public static native int read(int fd, byte[] buf, int off, int bufLen) throws IOException;
 
-    static native void write(int fd, byte[] buf, int off, int bufLen) throws IOException;
+    public static native void write(int fd, byte[] buf, int off, int bufLen) throws IOException;
 }

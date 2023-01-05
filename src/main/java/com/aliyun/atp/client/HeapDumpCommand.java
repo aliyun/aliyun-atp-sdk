@@ -22,12 +22,10 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
-class HeapDumpCommand extends Command {
+public class HeapDumpCommand extends Command {
     private static final String VM_OPERATION_HEAP_DUMP = "dumpheap";
 
-    HeapDumpCommand(String commandName, String description) {
+    public HeapDumpCommand(String commandName, String description) {
         super(commandName, description, new CommandOption[]{
             new CommandOption("-file", "", true, null),
             new CommandOption("-object", "", true, new String[]{"all", "live"}),

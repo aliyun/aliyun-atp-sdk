@@ -22,12 +22,10 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
 class HeapHistogramCommand extends Command {
     private static final String VM_OPERATION_INSPECT_HEAP = "inspectheap";
 
-    HeapHistogramCommand(String commandName, String description) {
+    public HeapHistogramCommand(String commandName, String description) {
         super(commandName, description, new CommandOption[]{});
     }
 

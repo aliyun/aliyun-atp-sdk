@@ -22,10 +22,7 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;

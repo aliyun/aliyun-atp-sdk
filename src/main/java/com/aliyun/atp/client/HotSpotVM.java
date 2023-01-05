@@ -22,7 +22,12 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package sun.tools.attach;
+package com.aliyun.atp.client;
+
+import sun.tools.attach.BsdVirtualMachine;
+import sun.tools.attach.LinuxVirtualMachine;
+import sun.tools.attach.VirtualMachineImpl;
+import sun.tools.attach.WindowsVirtualMachine;
 
 import java.io.*;
 import java.lang.reflect.Constructor;

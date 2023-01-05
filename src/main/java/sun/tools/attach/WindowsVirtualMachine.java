@@ -28,23 +28,23 @@ import java.io.IOException;
 
 // JNI methods reflection
 public class WindowsVirtualMachine {
-    static native void init();
+    public static native void init();
 
-    static native byte[] generateStub();
+    public static native byte[] generateStub();
 
-    static native long openProcess(int pid) throws IOException;
+    public static native long openProcess(int pid) throws IOException;
 
-    static native void closeProcess(long hProcess) throws IOException;
+    public static native void closeProcess(long hProcess) throws IOException;
 
-    static native long createPipe(String name) throws IOException;
+    public static native long createPipe(String name) throws IOException;
 
-    static native void closePipe(long hPipe) throws IOException;
+    public static native void closePipe(long hPipe) throws IOException;
 
-    static native void connectPipe(long hPipe) throws IOException;
+    public static native void connectPipe(long hPipe) throws IOException;
 
-    static native int readPipe(long hPipe, byte[] buf, int off, int buflen) throws IOException;
+    public static native int readPipe(long hPipe, byte[] buf, int off, int buflen) throws IOException;
 
-    static native void enqueue(long hProcess, byte[] stub,
+    public static native void enqueue(long hProcess, byte[] stub,
                                String cmd, String pipename, Object... args) throws IOException;
 
 }

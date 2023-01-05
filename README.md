@@ -6,7 +6,7 @@
 ## 构建和运行
 ```sh
 $ mvn package
-$ java -Xbootclasspath/a:target/atp-sdk-1.0.jar -jar target/atp-sdk-1.0.jar
+$ java -Xbootclasspath/a:target/atp-client-1.0.jar -jar target/atp-client-1.0.jar
 ```
 
 ## 命令行参数

@@ -24,15 +24,15 @@ package com.aliyun.atp.client;
 
 import java.util.Arrays;
 
-class CommandOption {
+public class CommandOption {
     private final String name;
     private final String[] valueSet;
     private final boolean mandatory;
     private String value;
 
-    CommandOption(String name, String value, boolean mandatory, String[] valueSet) {
+    public CommandOption(String name, String defaultValue, boolean mandatory, String[] valueSet) {
         this.name = name;
-        this.value = value;
+        this.value = defaultValue;
         this.mandatory = mandatory;
         this.valueSet = valueSet;
     }

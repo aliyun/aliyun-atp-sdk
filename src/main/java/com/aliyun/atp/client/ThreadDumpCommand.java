@@ -22,12 +22,10 @@
  */
 package com.aliyun.atp.client;
 
-import sun.tools.attach.HotSpotVM;
-
-class ThreadDumpCommand extends Command {
+public class ThreadDumpCommand extends Command {
     private static final String VM_OPERATION_THREAD_DUMP = "threaddump";
 
-    ThreadDumpCommand(String commandName, String description) {
+    public ThreadDumpCommand(String commandName, String description) {
         super(commandName, description, new CommandOption[]{
             new CommandOption("-lock", "", false, null),
             new CommandOption("-extend", "", false, null),
