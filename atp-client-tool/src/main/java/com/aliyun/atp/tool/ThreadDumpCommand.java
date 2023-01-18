@@ -20,25 +20,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
-public class JcmdCommand extends Command {
-    private static final String VM_OPERATION_JCMD = "jcmd";
-    private final String jcmdCommand;
+class ThreadDumpCommand extends Command {
+    private static final String VM_OPERATION_THREAD_DUMP = "threaddump";
 
-    public JcmdCommand(String commandName, String jcmdCommand, String description) {
-        super(commandName, description, new CommandOption[]{});
-        this.jcmdCommand = jcmdCommand;
+    ThreadDumpCommand(String commandName, String description) {
+        super(commandName, description, new CommandOption[]{
+            new CommandOption("-lock", "", false, null),
+            new CommandOption("-extend", "", false, null),
+        });
     }
 
     @Override
     protected void execute(HotSpotVM vm, String[] args) throws Exception {
-        String[] p;
-        p = new String[1 + (args != null ? args.length : 0)];
-        p[0] = jcmdCommand;
-        if (args != null) {
-            System.arraycopy(args, 0, p, 1, args.length);
+        boolean printLock = getOption("-lock") != null;
+        boolean printExtend = getOption("-extend") != null;
+        String dumpOption = "";
+        if (printLock) {
+            dumpOption += "-l ";
         }
-        vm.execute(VM_OPERATION_JCMD, p);
+        if (printExtend) {
+            dumpOption += "-e ";
+        }
+
+        vm.execute(VM_OPERATION_THREAD_DUMP, dumpOption.trim());
     }
 }

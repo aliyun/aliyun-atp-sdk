@@ -7,3 +7,7 @@ atptool.jar
 *.iml
 target/**
 run.sh
+**/target/**
+# Should be genreated during compilation
+atp-client-api/src/main/resources/atp-client-tool.jar
+atp-client-api/src/main/atp-client-api

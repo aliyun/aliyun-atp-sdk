@@ -3,16 +3,16 @@
 
 这是[阿里云应用诊断分析平台](https://grace.console.aliyun.com/)的数据源生成工具，它可以帮助您生成Java堆转储(Heap dump)文件、Java线程栈日志等，它支持仅包含JRE的环境，以及AlpineJDK等特殊环境，可以运行在Windows/MacOS/Linux，目标虚拟机支持JDK6到JDK20。
 
-## 构建和运行
+# 作为命令行工具使用
+您可以编译、构建出jar包，并通过Java命令行直接执行它
 ```sh
 $ mvn package
-$ java -Xbootclasspath/a:target/atp-client-1.0.jar -jar target/atp-client-1.0.jar
+$ java -Xbootclasspath/a:atp-client-api/src/main/resources/atp-client-tool.jar -jar atp-client-api/src/main/resources/atp-client-tool.jar
 ```
-
-## 命令行参数
+参数如下
 ```sh
 Usage:
-ATPClient <pid> <subcommand> <options>
+Main <pid> <subcommand> <options>
 
 Subcommands:
 heap                          Generate heap dump of Java process
@@ -68,4 +68,29 @@ vm_unlock_commercial_features Obsolete
 vm_uptime                     Print VM uptime.
 vm_version                    Print JVM version information.
 
+```
+
+# 作为Java SDK使用
+您可以添加如下Maven依赖并通过SDK方式调用：
+```
+<dependency>
+  <groupId>com.aliyun.atp</groupId>
+  <artifactId>atp-client-api</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+```java
+import com.aliyun.atp.tool.ATPClient;
+
+public class SDKExample {
+    public static void main(String[] args) {
+        try {
+            ATPClient.execute(null);
+            ATPClient.execute(new String[]{"<pid>", "thread"});
+            ATPClient.execute(new String[]{"<pid>", "heap", "-file=/tmp/heapdump.hprof","-object=live"});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
 ```

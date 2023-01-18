@@ -20,22 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
-public class HeapDumpCommand extends Command {
-    private static final String VM_OPERATION_HEAP_DUMP = "dumpheap";
+class HeapHistogramCommand extends Command {
+    private static final String VM_OPERATION_INSPECT_HEAP = "inspectheap";
 
-    public HeapDumpCommand(String commandName, String description) {
-        super(commandName, description, new CommandOption[]{
-            new CommandOption("-file", "", true, null),
-            new CommandOption("-object", "", true, new String[]{"all", "live"}),
-        });
+    HeapHistogramCommand(String commandName, String description) {
+        super(commandName, description, new CommandOption[]{});
     }
 
     @Override
     protected void execute(HotSpotVM vm, String[] args) throws Exception {
-        String filePath = getOption("-file").getValue();
-        String dumpOption = getOption("-object").getValue();
-        vm.execute(VM_OPERATION_HEAP_DUMP, filePath, "-" + dumpOption);
+        vm.execute(VM_OPERATION_INSPECT_HEAP);
     }
 }

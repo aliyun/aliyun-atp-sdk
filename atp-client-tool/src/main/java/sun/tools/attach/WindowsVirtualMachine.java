@@ -27,25 +27,7 @@ package sun.tools.attach;
 import java.io.IOException;
 
 // JNI methods reflection
-public class VirtualMachineImpl {
-    public static native void sendQuitTo(int pid) throws IOException;
-
-    public static native void checkPermissions(String path) throws IOException;
-
-    public static native int socket() throws IOException;
-
-    public static native void connect(int fd, String path) throws IOException;
-
-    public static native void close(int fd) throws IOException;
-
-    public static native int read(int fd, byte[] buf, int off, int bufLen) throws IOException;
-
-    public static native void write(int fd, byte[] buf, int off, int bufLen) throws IOException;
-
-    public static native void createAttachFile0(String path);
-
-    public static native String getTempDir();
-
+public class WindowsVirtualMachine {
     public static native void init();
 
     public static native byte[] generateStub();
@@ -63,25 +45,6 @@ public class VirtualMachineImpl {
     public static native int readPipe(long hPipe, byte[] buf, int off, int buflen) throws IOException;
 
     public static native void enqueue(long hProcess, byte[] stub,
-                               String cmd, String pipename, Object... args) throws IOException;
+                                      String cmd, String pipename, Object... args) throws IOException;
 
-    public static int connectToVM(String socketPath) throws IOException {
-        int fd = socket();
-        try {
-            connect(fd, socketPath);
-        } catch (IOException x) {
-            close(fd);
-            throw x;
-        }
-        return fd;
-    }
-
-    public static void checkConnection(String socketPath) throws IOException {
-        int fd = socket();
-        try {
-            connect(fd, socketPath);
-        } finally {
-            close(fd);
-        }
-    }
 }

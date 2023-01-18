@@ -20,11 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
 import java.util.Arrays;
 
-public abstract class Command {
+abstract class Command {
     private final String name;
     private final String description;
     private final CommandOption[] options;

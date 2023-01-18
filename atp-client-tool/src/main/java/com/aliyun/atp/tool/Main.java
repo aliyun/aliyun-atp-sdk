@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,8 +28,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ATPClient {
+public class Main {
     private static final Set<Command> commands = new LinkedHashSet<Command>();
+
     static {
         registerCommands();
     }
@@ -43,7 +44,7 @@ public class ATPClient {
             "List class and number of instance in Java heap"));
     }
 
-    private static void registerJcmdCommands(HotSpotVM vm){
+    private static void registerJcmdCommands(HotSpotVM vm) {
         PrintStream oldOut = System.out;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(bos);
@@ -83,8 +84,8 @@ public class ATPClient {
 
     private static void usage() {
         System.err.println("Usage:");
-        System.err.println(ATPClient.class.getSimpleName() + " <pid> <subcommand> <options>");
-        System.err.println("");
+        System.err.println(Main.class.getSimpleName() + " <pid> <subcommand> <options>");
+        System.err.println();
         System.err.println("Subcommands:");
         Iterator<Command> iter = commands.iterator();
         while (iter.hasNext()) {

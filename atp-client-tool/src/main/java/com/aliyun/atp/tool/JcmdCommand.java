@@ -20,17 +20,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
-class HeapHistogramCommand extends Command {
-    private static final String VM_OPERATION_INSPECT_HEAP = "inspectheap";
+class JcmdCommand extends Command {
+    private static final String VM_OPERATION_JCMD = "jcmd";
+    private final String jcmdCommand;
 
-    public HeapHistogramCommand(String commandName, String description) {
+    JcmdCommand(String commandName, String jcmdCommand, String description) {
         super(commandName, description, new CommandOption[]{});
+        this.jcmdCommand = jcmdCommand;
     }
 
     @Override
     protected void execute(HotSpotVM vm, String[] args) throws Exception {
-        vm.execute(VM_OPERATION_INSPECT_HEAP);
+        String[] p;
+        p = new String[1 + (args != null ? args.length : 0)];
+        p[0] = jcmdCommand;
+        if (args != null) {
+            System.arraycopy(args, 0, p, 1, args.length);
+        }
+        vm.execute(VM_OPERATION_JCMD, p);
     }
 }

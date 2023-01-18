@@ -20,30 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.aliyun.atp.client;
+package com.aliyun.atp.tool;
 
-public class ThreadDumpCommand extends Command {
-    private static final String VM_OPERATION_THREAD_DUMP = "threaddump";
+class HeapDumpCommand extends Command {
+    private static final String VM_OPERATION_HEAP_DUMP = "dumpheap";
 
-    public ThreadDumpCommand(String commandName, String description) {
+    HeapDumpCommand(String commandName, String description) {
         super(commandName, description, new CommandOption[]{
-            new CommandOption("-lock", "", false, null),
-            new CommandOption("-extend", "", false, null),
+            new CommandOption("-file", "", true, null),
+            new CommandOption("-object", "", true, new String[]{"all", "live"}),
         });
     }
 
     @Override
     protected void execute(HotSpotVM vm, String[] args) throws Exception {
-        boolean printLock = getOption("-lock") != null;
-        boolean printExtend = getOption("-extend") != null;
-        String dumpOption = "";
-        if (printLock) {
-            dumpOption += "-l ";
-        }
-        if (printExtend) {
-            dumpOption += "-e ";
-        }
-
-        vm.execute(VM_OPERATION_THREAD_DUMP, dumpOption.trim());
+        String filePath = getOption("-file").getValue();
+        String dumpOption = getOption("-object").getValue();
+        vm.execute(VM_OPERATION_HEAP_DUMP, filePath, "-" + dumpOption);
     }
 }
