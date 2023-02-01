@@ -1,6 +1,6 @@
 /**
  * MIT License
- * Copyright (c) 2022 Alibaba Cloud
+ * Copyright (c) 2022, 2023 Alibaba Cloud
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 package com.aliyun.atp.tool;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -45,22 +46,22 @@ public class Main {
     }
 
     private static void registerJcmdCommands(HotSpotVM vm) {
-        PrintStream oldOut = System.out;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        PrintStream newOut = new PrintStream(bos);
-        System.setOut(newOut);
+        PrintStream ps = new PrintStream(bos);
         try {
-            new JcmdCommand("", "help", "").executeCommand(vm, null);
+            new JcmdCommand("", "help", "")
+                .redirectOutput(ps)
+                .executeCommand(vm, null);
             String availableJcmd = bos.toString();
             String[] lines = availableJcmd.split("\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i].matches("[a-zA-Z_]+?\\.[a-zA-Z_]+")) {
                     // Read help document of jcmd subcommands
                     bos = new ByteArrayOutputStream();
-                    newOut = new PrintStream(bos);
-                    System.setOut(newOut);
-                    new JcmdCommand("", "help " + lines[i], "").executeCommand(vm, null);
-                    System.setOut(oldOut);
+                    ps = new PrintStream(bos);
+                    new JcmdCommand("", "help " + lines[i], "")
+                        .redirectOutput(ps)
+                        .executeCommand(vm, null);
                     String jcmdHelp = bos.toString();
                     String[] jcmdHelpLines = jcmdHelp.split("\n");
                     String description = "";
@@ -78,7 +79,11 @@ public class Main {
             // Failed to execute Jcmd operations
             // Skip...
         } finally {
-            System.setOut(oldOut);
+            try {
+                bos.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

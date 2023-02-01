@@ -22,12 +22,16 @@
  */
 package com.aliyun.atp.tool;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 
 abstract class Command {
     private final String name;
     private final String description;
     private final CommandOption[] options;
+    private PrintStream newOut;
+
 
     public Command() {
         this.name = "";
@@ -86,9 +90,25 @@ abstract class Command {
         }
     }
 
+    public Command redirectOutput(PrintStream os) {
+        newOut = os;
+        return this;
+    }
+
     public final void executeCommand(HotSpotVM vm, String[] args) throws Exception {
         parseInputArguments(args);
-        execute(vm, args);
+        PrintStream oldOut = null;
+        if (newOut != null) {
+            oldOut = System.out;
+            System.setOut(newOut);
+        }
+        try {
+            execute(vm, args);
+        } finally {
+            if (oldOut != null) {
+                System.setOut(oldOut);
+            }
+        }
     }
 
     protected abstract void execute(HotSpotVM vm, String[] args) throws Exception;
