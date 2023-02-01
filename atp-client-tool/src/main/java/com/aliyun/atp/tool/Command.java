@@ -65,7 +65,7 @@ abstract class Command {
     }
 
     protected void parseInputArguments(String[] args) throws Exception {
-        for (int i = 0; i < options.length; i++) {
+        for (int i = 0; options != null && i < options.length; i++) {
             CommandOption option = options[i];
             if (option.isMandatory()) {
                 boolean found = false;
@@ -116,7 +116,7 @@ abstract class Command {
     @Override
     public String toString() {
         String str = String.format("%-30s%s", name, description != null ? description : "");
-        if (options.length > 0) {
+        if (options != null && options.length > 0) {
             str += "\n                              " + Arrays.toString(options);
         }
         return str;

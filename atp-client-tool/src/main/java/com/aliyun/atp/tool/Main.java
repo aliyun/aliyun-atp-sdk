@@ -43,6 +43,8 @@ public class Main {
             "Print all threads and their stack traces"));
         commands.add(new HeapHistogramCommand("list_heap",
             "List class and number of instance in Java heap"));
+        commands.add(new FullJcmdCommand("full_jcmd",
+            "Execute all available jcmd commands and gather their output to a file"));
     }
 
     private static void registerJcmdCommands(HotSpotVM vm) {
