@@ -76,20 +76,23 @@ vm_version                    Print JVM version information.
 <dependency>
   <groupId>com.aliyun.atp</groupId>
   <artifactId>atp-client-api</artifactId>
-  <version>1.0</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 ```java
 import com.aliyun.atp.tool.ATPClient;
+import com.aliyun.atp.tool.ClientException;
 
 public class SDKExample {
     public static void main(String[] args) {
         try {
             ATPClient.execute(null);
             ATPClient.execute(new String[]{"<pid>", "thread"});
+            ATPClient.execute(new String[]{"<pid>", "full_jcmd"});
+            ATPClient.execute(new String[]{"<pid>", "heap", "-file=/tmp/heapdump.hprof","-object=all"});
             ATPClient.execute(new String[]{"<pid>", "heap", "-file=/tmp/heapdump.hprof","-object=live"});
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (ClientException e) {
+            e.printStackTrace();
         }
     }
 }

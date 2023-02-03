@@ -34,19 +34,19 @@ public class ATPClient {
     private static final String ATP_CLIENT_TOOL_JAR = "atp-client-tool.jar";
     private static final Random RAND = new Random();
 
-    public static void execute(String[] args) throws Exception {
+    public static void execute(String[] args) throws ClientException {
         File file = new File(".T" + RAND.nextInt() + ATP_CLIENT_TOOL_JAR);
-
-        if (file.exists()) {
-            throw new Exception("Can not create client due to its existence");
-        }
 
         InputStream link = ATPClient.class.getClassLoader().getResourceAsStream(ATP_CLIENT_TOOL_JAR);
         if (link == null) {
-            throw new Exception("Can not create client due to missing dependencies");
+            throw new ClientException("Can not find client tool");
         }
 
-        Files.copy(link, file.getAbsoluteFile().toPath());
+        try {
+            Files.copy(link, file.getAbsoluteFile().toPath());
+        } catch (IOException e) {
+            throw new ClientException("Failed to extract client tool from jar");
+        }
 
         ArrayList<String> cmdArgs = new ArrayList<>();
         cmdArgs.add("java");
@@ -60,13 +60,17 @@ public class ATPClient {
         ps.redirectErrorStream(true);
         try {
             Process pr = ps.start();
-            try (InputStreamReader ir = new InputStreamReader(pr.getInputStream()); BufferedReader br = new BufferedReader(ir)) {
+            try (InputStreamReader ir = new InputStreamReader(pr.getInputStream());
+                 BufferedReader br = new BufferedReader(ir)) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     System.out.println(line);
                 }
                 pr.waitFor(10, TimeUnit.MINUTES);
             }
+        } catch (IOException | InterruptedException ex) {
+            throw new ClientException("Failed to execute client tool: " + ex.getMessage());
+
         } finally {
             file.delete();
         }
