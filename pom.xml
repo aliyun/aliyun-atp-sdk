@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>atp-sdk</name>
-    <url>https://grace.console.aliyun.com</url>
+    <url>https://www.aliyun.com/product/developerservices/atp</url>
     <description>Aliyun Application Troubleshooting Platform SDK</description>
 
     <groupId>com.aliyun.atp</groupId>
