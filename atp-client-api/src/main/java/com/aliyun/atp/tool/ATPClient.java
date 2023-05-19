@@ -1,6 +1,6 @@
 /**
  * MIT License
- * Copyright (c) 2022 Alibaba Cloud
+ * Copyright (c) 2022, 2023 Alibaba Cloud
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +34,38 @@ public class ATPClient {
     private static final String ATP_CLIENT_TOOL_JAR = "atp-client-tool.jar";
     private static final Random RAND = new Random();
 
+    private static String findJavaCommand() {
+        String javaHome = System.getProperty("java.home");
+        if (javaHome != null && !javaHome.isEmpty()) {
+            String jdkTool = javaHome + File.separator + "bin" + File.separator;
+            if (isWindows()) {
+                jdkTool += "java.exe";
+            } else {
+                jdkTool += "java";
+            }
+            return jdkTool;
+        }
+        return isWindows() ? "java.exe" : "java";
+    }
+
+    private static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os != null && os.contains("win");
+    }
+
+    private static boolean isJavaCommandExist(String javaCmd) {
+        try {
+            Process process = Runtime.getRuntime().exec(javaCmd + " -version");
+            int exitValue = process.waitFor();
+            return exitValue == 0;
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+
     public static void execute(String[] args) throws ClientException {
         File file = new File(".T" + RAND.nextInt() + ATP_CLIENT_TOOL_JAR);
-
+        // extract client tool jar
         InputStream link = ATPClient.class.getClassLoader().getResourceAsStream(ATP_CLIENT_TOOL_JAR);
         if (link == null) {
             throw new ClientException("Can not find client tool");
@@ -48,8 +77,15 @@ public class ATPClient {
             throw new ClientException("Failed to extract client tool from jar");
         }
 
+        // before launching client tool, we need to check if "java" exists
+        String javaCommand = findJavaCommand();
+        if (!isJavaCommandExist(javaCommand)) {
+            throw new ClientException("Failed to execute client tool: can not find java command");
+        }
+
+        // launch client tool jar as standalone application
         ArrayList<String> cmdArgs = new ArrayList<>();
-        cmdArgs.add("java");
+        cmdArgs.add(javaCommand);
         cmdArgs.add("-Xbootclasspath/a:" + file.getAbsolutePath());
         cmdArgs.add("-jar");
         cmdArgs.add(file.getAbsolutePath());
@@ -70,7 +106,6 @@ public class ATPClient {
             }
         } catch (IOException | InterruptedException ex) {
             throw new ClientException("Failed to execute client tool: " + ex.getMessage());
-
         } finally {
             file.delete();
         }
