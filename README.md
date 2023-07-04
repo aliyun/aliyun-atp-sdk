@@ -76,7 +76,7 @@ vm_version                    Print JVM version information.
 <dependency>
   <groupId>com.aliyun.atp</groupId>
   <artifactId>atp-client-api</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 ```java

@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import com.aliyun.atp.tool.ATPClient;
 import com.aliyun.atp.tool.ClientException;
 import sun.management.VMManagement;
@@ -48,6 +49,7 @@ public class Example {
             int pid = getCurrentProcessId();
             ATPClient.execute(null);
             ATPClient.execute(new String[]{"" + pid, "thread"});
+            ATPClient.execute(new String[]{"" + pid, "heap", "-object=all", "-file=test.bin"});
         } catch (ClientException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -24,6 +24,7 @@ package com.aliyun.atp.tool;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -63,19 +64,57 @@ public class ATPClient {
         }
     }
 
-    public static void execute(String[] args) throws ClientException {
-        File file = new File(".T" + RAND.nextInt() + ATP_CLIENT_TOOL_JAR);
-        // extract client tool jar
-        InputStream link = ATPClient.class.getClassLoader().getResourceAsStream(ATP_CLIENT_TOOL_JAR);
+    private static File extractClientTool() throws ClientException {
+        File file;
+        try {
+            file = File.createTempFile(".ATP", ATP_CLIENT_TOOL_JAR);
+        } catch (IOException e) {
+            throw new ClientException("Failed to create temporary file: " + e.getMessage());
+        }
+
+        ClassLoader loader = ATPClient.class.getClassLoader();
+        if (loader == null) {
+            throw new ClientException("Can not find client tool: it should not be loaded by bootclassloader");
+        }
+
+        InputStream link = loader.getResourceAsStream(ATP_CLIENT_TOOL_JAR);
         if (link == null) {
             throw new ClientException("Can not find client tool");
         }
 
         try {
-            Files.copy(link, file.getAbsoluteFile().toPath());
+            Files.copy(link, file.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new ClientException("Failed to extract client tool from jar");
+            // fallback to create temporary file in working directory
+            file = new File(".T" + RAND.nextInt() + ATP_CLIENT_TOOL_JAR);
+            try {
+                Files.copy(link, file.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                return file;
+            } catch (IOException ex) {
+            }
+            throw new ClientException("Failed to extract client tool from jar: " + e.getMessage());
         }
+
+        return file;
+    }
+
+    public static Process startProcess(String javaCommand, String clientToolPath, String[] args) throws IOException {
+        // launch client tool jar as standalone application
+        ArrayList<String> cmdArgs = new ArrayList<>();
+        cmdArgs.add(javaCommand);
+        cmdArgs.add("-Xbootclasspath/a:" + clientToolPath);
+        cmdArgs.add("-jar");
+        cmdArgs.add(clientToolPath);
+        if (args != null) {
+            cmdArgs.addAll(Arrays.asList(args));
+        }
+        ProcessBuilder ps = new ProcessBuilder(cmdArgs);
+        ps.redirectErrorStream(true);
+        return ps.start();
+    }
+
+    public static void execute(String[] args) throws ClientException {
+        File clientTool = extractClientTool();
 
         // before launching client tool, we need to check if "java" exists
         String javaCommand = findJavaCommand();
@@ -83,31 +122,20 @@ public class ATPClient {
             throw new ClientException("Failed to execute client tool: can not find java command");
         }
 
-        // launch client tool jar as standalone application
-        ArrayList<String> cmdArgs = new ArrayList<>();
-        cmdArgs.add(javaCommand);
-        cmdArgs.add("-Xbootclasspath/a:" + file.getAbsolutePath());
-        cmdArgs.add("-jar");
-        cmdArgs.add(file.getAbsolutePath());
-        if (args != null) {
-            cmdArgs.addAll(Arrays.asList(args));
-        }
-        ProcessBuilder ps = new ProcessBuilder(cmdArgs);
-        ps.redirectErrorStream(true);
         try {
-            Process pr = ps.start();
+            Process pr = startProcess(javaCommand, clientTool.getAbsolutePath(), args);
             try (InputStreamReader ir = new InputStreamReader(pr.getInputStream());
                  BufferedReader br = new BufferedReader(ir)) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     System.out.println(line);
                 }
-                pr.waitFor(10, TimeUnit.MINUTES);
+                pr.waitFor(1, TimeUnit.HOURS);
             }
         } catch (IOException | InterruptedException ex) {
             throw new ClientException("Failed to execute client tool: " + ex.getMessage());
         } finally {
-            file.delete();
+            clientTool.delete();
         }
     }
 }

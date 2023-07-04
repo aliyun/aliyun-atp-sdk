@@ -12,3 +12,4 @@ run.sh
 atp-client-api/src/main/resources/atp-client-tool.jar
 atp-client-api/src/main/atp-client-api
 .T*
+*.log
